@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,6 @@ public class BaseStats : MonoBehaviour
     public int OriginalMagicDefense = 5;
 
     public int MagicDefense;
-
     private void Start()
     {
         Health = Health != 0 ? Health : MaxHealth;

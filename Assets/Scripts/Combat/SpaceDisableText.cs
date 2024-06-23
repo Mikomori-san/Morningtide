@@ -7,6 +7,7 @@ public class SpaceDisableText : MonoBehaviour
 {
     [SerializeField]
     private GameObject combatController;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +22,5 @@ public class SpaceDisableText : MonoBehaviour
             combatController.GetComponent<EnemyLookAtPointLogic>().SetStartFalse();
             gameObject.SetActive(false);
         }
-
     }
 }

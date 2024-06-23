@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 
 public class EnemyLookAtPointLogic : MonoBehaviour
 {
-    public Transform enemyLookAtPoint;
+    [SerializeField] Transform enemyLookAtPoint;
+    [SerializeField] Transform playerLookAtPoint;
 
     [HideInInspector]
     public List<GameObject> enemies;
@@ -14,10 +15,17 @@ public class EnemyLookAtPointLogic : MonoBehaviour
     [HideInInspector]
     public Transform currentPlayerTransform;
 
-    int i = 0;
+    private CombatController combatController;
+
+    int CurrentEnemyIndex = 0;
 
     private bool isStartOfFight = true;
 
+    public int GetCurrentEnemyIndex()
+    {
+        return CurrentEnemyIndex;
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -28,34 +36,43 @@ public class EnemyLookAtPointLogic : MonoBehaviour
 
         enemyLookAtPoint.transform.position = currentPlayerTransform.position;
         currentPlayerTransform.LookAt(enemyLookAtPoint.position);
+        
+        combatController = GetComponent<CombatController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!isStartOfFight)
+        if(isStartOfFight) return;
+        if(!combatController.PlayerRound) return;
+        
+        
+        if (Keyboard.current.dKey.wasPressedThisFrame)
         {
-            if (Keyboard.current.dKey.wasPressedThisFrame)
-            {
-                i = i == enemies.Count - 1 ? 0 : i + 1;
-            }
-            else if(Keyboard.current.aKey.wasPressedThisFrame)
-            {
-                i = i == 0 ? enemies.Count - 1 : i - 1;
-            }
+            CurrentEnemyIndex = CurrentEnemyIndex == enemies.Count - 1 ? 0 : CurrentEnemyIndex + 1;
+        }
+        else if(Keyboard.current.aKey.wasPressedThisFrame)
+        {
+            CurrentEnemyIndex = CurrentEnemyIndex == 0 ? enemies.Count - 1 : CurrentEnemyIndex - 1;
+        }
 
-            if(Keyboard.current.wasUpdatedThisFrame)
-            {
-                enemyLookAtPoint.transform.position = enemies.ElementAt(i).transform.position;
-                currentPlayerTransform.LookAt(enemyLookAtPoint.position);
-            }
+        if(Keyboard.current.wasUpdatedThisFrame)
+        {
+            enemyLookAtPoint.transform.position = enemies.ElementAt(CurrentEnemyIndex).transform.position;
+            currentPlayerTransform.LookAt(enemyLookAtPoint.position);
         }
     }
 
     public void SetStartFalse()
     {
         isStartOfFight = false;
-        enemyLookAtPoint.transform.position = enemies.ElementAt(0).transform.position;
+        enemyLookAtPoint.transform.position = enemies.ElementAt(CurrentEnemyIndex).transform.position;
+        gameObject.GetComponent<UIController>().SetButtonsActive();
+
+        foreach (var enemy in enemies)
+        {
+            enemy.transform.LookAt(new Vector3(playerLookAtPoint.position.x, enemy.transform.position.y, playerLookAtPoint.position.z));
+        }
     }
     private int GetNumberFromName(string name)
     {
@@ -68,5 +85,13 @@ public class EnemyLookAtPointLogic : MonoBehaviour
         {
             return int.MaxValue;
         }
+    }
+
+    public void ResetView(List<GameObject> newEnemies)
+    {
+        enemies = newEnemies;
+        enemies.Sort((x, y) => GetNumberFromName(x.name).CompareTo(GetNumberFromName(y.name)));
+        enemyLookAtPoint.transform.position = enemies.ElementAt(CurrentEnemyIndex).transform.position;
+        currentPlayerTransform.LookAt(enemyLookAtPoint.position);
     }
 }
