@@ -211,6 +211,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 5146688928687796946, guid: 210a62bfc330db34da7d1daedef2f072,
+        type: 3}
+      propertyPath: combatControllerObject
+      value: 
+      objectReference: {fileID: 1612168497}
     - target: {fileID: 5783700936744281271, guid: 210a62bfc330db34da7d1daedef2f072,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -533,7 +538,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 589592997}
-  m_LocalRotation: {x: 0.031777766, y: -0.032413483, z: 0.0010310916, w: 0.9989687}
+  m_LocalRotation: {x: 0.031777747, y: -0.03241345, z: 0.0010310899, w: 0.9989687}
   m_LocalPosition: {x: 0.695, y: 1.36, z: -6.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -812,6 +817,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 5146688928687796946, guid: 210a62bfc330db34da7d1daedef2f072,
+        type: 3}
+      propertyPath: combatControllerObject
+      value: 
+      objectReference: {fileID: 1612168497}
     - target: {fileID: 5783700936744281271, guid: 210a62bfc330db34da7d1daedef2f072,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1059,7 +1069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 100
   Health: 0
-  OriginalAttack: 70
+  OriginalAttack: 130
   Attack: 0
   OriginalDefense: 5
   Defense: 0
@@ -1109,17 +1119,17 @@ PrefabInstance:
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.031777766
+      value: 0.031777747
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.032413483
+      value: -0.03241345
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0010310916
+      value: 0.0010310899
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8,
         type: 3}
@@ -1255,6 +1265,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemies: []
   players: []
+  enemyNameHasTurn: 1
+  enemyIndexHasTurn: 0
 --- !u!4 &1612168499
 Transform:
   m_ObjectHideFlags: 0
@@ -2115,6 +2127,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 5146688928687796946, guid: 210a62bfc330db34da7d1daedef2f072,
+        type: 3}
+      propertyPath: combatControllerObject
+      value: 
+      objectReference: {fileID: 1612168497}
     - target: {fileID: 5783700936744281271, guid: 210a62bfc330db34da7d1daedef2f072,
         type: 3}
       propertyPath: m_AnchorMax.y

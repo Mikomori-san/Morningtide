@@ -83,6 +83,7 @@ public class UIController : MonoBehaviour
             }
             
             combatController.PlayerRound = false;
+            Debug.Log("Enemy Round");
         }
     }
 }

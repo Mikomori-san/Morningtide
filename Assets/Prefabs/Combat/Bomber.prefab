@@ -2497,6 +2497,7 @@ GameObject:
   - component: {fileID: 8486864887281644601}
   - component: {fileID: 8486864887281644600}
   - component: {fileID: 5768213045758802505}
+  - component: {fileID: 5146688928687796946}
   m_Layer: 0
   m_Name: Bomber
   m_TagString: Enemy
@@ -2580,6 +2581,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthbar: {fileID: 1706315409632830159}
+--- !u!114 &5146688928687796946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8720674734493588373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95b1f5509643e004c9503d6d67793500, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatControllerObject: {fileID: 0}
+  isDone: 0
+  hasDefended: 0
 --- !u!1 &8767109938371800511
 GameObject:
   m_ObjectHideFlags: 0

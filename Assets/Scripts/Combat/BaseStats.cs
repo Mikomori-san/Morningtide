@@ -38,8 +38,15 @@ public class BaseStats : MonoBehaviour
         MagicDefense = MagicDefense != 0 ? MagicDefense : OriginalMagicDefense;
     }
 
-    public void GetDamage(int damage)
+    public void GetPhysicalDamage(int damage)
     {
+        damage = damage / Defense;
+        this.Health -= damage;
+    }
+
+    public void GetMagicDamage(int damage)
+    {
+        damage = damage / MagicDefense;
         this.Health -= damage;
     }
 

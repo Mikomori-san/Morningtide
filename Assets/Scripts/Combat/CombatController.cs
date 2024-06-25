@@ -1,5 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Cinemachine;
+using StarterAssets;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,22 +11,38 @@ public class CombatController : MonoBehaviour
 {
     [HideInInspector] public List<GameObject> enemies = new List<GameObject>();
     [HideInInspector] public List<GameObject> players = new List<GameObject>();
+    [HideInInspector] public int enemyNameHasTurn = 1;
+    [HideInInspector] public int enemyIndexHasTurn = 0;
     
     private bool playerRound = true;
     private bool playerDefended = false;
-    private float aiTimer = 0;
     
     EnemyLookAtPointLogic enemyPointer;
-    
+
     public bool PlayerRound
     {
         get => playerRound;
         set => playerRound = value;
     }
 
+    public void IncreaseEnemyTurn()
+    {
+        if(enemyIndexHasTurn == enemies.Count - 1)
+            enemyIndexHasTurn = 0;
+        else
+            enemyIndexHasTurn++;
+        
+        enemyNameHasTurn = int.Parse(enemies[enemyIndexHasTurn].name);
+        Debug.Log("Enemy has turn" + enemyNameHasTurn);
+    }
     public void AttackCurrentEnemy()
     {
-        enemies[enemyPointer.GetCurrentEnemyIndex()].GetComponent<BaseStats>().GetDamage(players[0].GetComponent<BaseStats>().Attack);
+        enemies[enemyPointer.GetCurrentEnemyIndex()].GetComponent<BaseStats>().GetPhysicalDamage(players[0].GetComponent<BaseStats>().Attack);
+    }
+    
+    public void AttackTargetedPlayer(int playerIndex, int damage)
+    {
+        players[playerIndex].GetComponent<BaseStats>().GetPhysicalDamage(damage);
     }
 
     public void DefendCurrentPlayer()
@@ -37,48 +56,13 @@ public class CombatController : MonoBehaviour
         enemies.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
         players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
         
+        enemies.Sort((x, y) => HelperFunctions.GetNumberFromName(x.name).CompareTo(HelperFunctions.GetNumberFromName(y.name)));
+        
         enemyPointer = GetComponent<EnemyLookAtPointLogic>();
     }
 
     void Update()
     {
-        if (!playerRound && aiTimer < 2)
-        {
-            aiTimer += Time.deltaTime;
-            
-            if(aiTimer > 2)
-            {
-                aiTimer = 0;
-                playerRound = true;
-                Debug.Log("Player Round");
-                
-                if (playerDefended)
-                {
-                    players[0].GetComponent<BaseStats>().NerfDefense(5);
-                    playerDefended = false;
-                }
-            }
-        }
-        
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            BaseStats enemyStats = enemies[i].GetComponent<BaseStats>();
-            if (enemyStats.Health <= 0 && !enemies[i].GetComponent<Animator>().GetBool("isDying"))
-            {
-                enemies[i].GetComponent<Animator>().SetBool("isDying", true);
-                StartCoroutine(Dying(enemies[i]));
-            }
-        }
-
-        for(int i = 0; i < players.Count; i++)
-        {
-            BaseStats playerStats = players[i].GetComponent<BaseStats>();
-            if (playerStats.Health <= 0)
-            {
-                Destroy(players[i]);
-            }
-        }
-
         if(enemies.Count == 0)
         {
             SceneManager.LoadScene("World");
@@ -88,25 +72,67 @@ public class CombatController : MonoBehaviour
         {
             Debug.Log("You lose!");
         }
+        
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            BaseStats enemyStats = enemies[i].GetComponent<BaseStats>();
+            if (enemyStats.Health <= 0 && !enemies[i].GetComponent<Animator>().GetBool("isDying"))
+            {
+                enemies[i].GetComponent<Animator>().SetBool("isDying", true);
+                
+                StartCoroutine(Dying(enemies[i]));
+                
+                enemies[i].GetComponent<AIBehavior>().enabled = false;
+                
+                enemies.Remove(enemies[i]);
+
+                enemies.Sort((x, y) => HelperFunctions.GetNumberFromName(x.name).CompareTo(HelperFunctions.GetNumberFromName(y.name)));
+                enemyPointer.ResetView(enemies);
+                
+                enemyPointer.SetCurrentEnemyIndex(0);
+                enemyNameHasTurn = int.Parse(enemies[0].name);
+            }
+        }
+        
+        for(int i = 0; i < players.Count; i++)
+        {
+            BaseStats playerStats = players[i].GetComponent<BaseStats>();
+            if (playerStats.Health <= 0)
+            {
+                Destroy(players[i]);
+            }
+        }
+        
+        if (!playerRound)
+        {
+            bool allEnemiesDone = enemies.All(enemy => enemy.GetComponent<AIBehavior>().isDone);
+
+            if (allEnemiesDone)
+            {
+                playerRound = true;
+                enemyNameHasTurn = int.Parse(enemies[0].name);
+                Debug.Log("Player Round");
+                
+                enemyPointer.SetCurrentEnemyIndex(0);
+                
+                if (playerDefended)
+                {
+                    players[0].GetComponent<BaseStats>().NerfDefense(5);
+                    playerDefended = false;
+                }
+            }
+        }
     }
 
     IEnumerator Dying(GameObject enemy)
     {
-        bool isReallyDying = false;
-        
         while (true)
         {
             if (enemy.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 &&
-                !enemy.GetComponent<Animator>().IsInTransition(0) && isReallyDying)
+                !enemy.GetComponent<Animator>().IsInTransition(0))
             {
-                enemies.Remove(enemy);
                 Destroy(enemy);
                 break;
-            }
-            else
-            {
-                isReallyDying = true;
-                enemyPointer.ResetView(enemies);
             }
 
             yield return new WaitForEndOfFrame();
