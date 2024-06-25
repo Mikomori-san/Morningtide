@@ -18,6 +18,7 @@ public class CombatController : MonoBehaviour
     private bool playerDefended = false;
     
     EnemyLookAtPointLogic enemyPointer;
+    private bool someoneIsDying = false;
 
     public bool PlayerRound
     {
@@ -63,15 +64,18 @@ public class CombatController : MonoBehaviour
 
     void Update()
     {
-        if(enemies.Count == 0)
+        if(enemies.Count == 0 && !someoneIsDying)
         {
-            SceneManager.LoadScene("World");
+            Debug.Log("You win!");
+            
+            PlayerState.Instance.Health = players[0].GetComponent<BaseStats>().Health;
+            PlayerState.Instance.Mana = players[0].GetComponent<BaseStats>().Mana;
+            
             Cursor.visible = false;
+            SceneManager.LoadScene("World"); 
         }
-        else if(players.Count == 0)
-        {
-            Debug.Log("You lose!");
-        }
+        
+        if(enemies.Count == 0) return;
         
         for (int i = 0; i < enemies.Count; i++)
         {
@@ -99,7 +103,9 @@ public class CombatController : MonoBehaviour
             BaseStats playerStats = players[i].GetComponent<BaseStats>();
             if (playerStats.Health <= 0)
             {
-                Destroy(players[i]);
+                Debug.Log("You lose!");
+                SceneManager.LoadScene("World");
+                Cursor.visible = false;
             }
         }
         
@@ -126,6 +132,7 @@ public class CombatController : MonoBehaviour
 
     IEnumerator Dying(GameObject enemy)
     {
+        someoneIsDying = true;
         yield return new WaitForEndOfFrame();
         
         while (true)
@@ -139,5 +146,19 @@ public class CombatController : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
+
+        someoneIsDying = false;
+    }
+    
+    public void HealPlayer()
+    {
+        players[0].GetComponent<BaseStats>().Heal(2 * players[0].GetComponent<BaseStats>().Magic);
+        players[0].GetComponent<BaseStats>().RemoveMana(30);
+    }
+
+    public void MagicMissile()
+    {
+        enemies[enemyPointer.GetCurrentEnemyIndex()].GetComponent<BaseStats>().GetMagicDamage(players[0].GetComponent<BaseStats>().Magic * 8);
+        players[0].GetComponent<BaseStats>().RemoveMana(20);
     }
 }

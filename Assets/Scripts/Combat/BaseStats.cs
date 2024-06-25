@@ -31,14 +31,23 @@ public class BaseStats : MonoBehaviour
     public int MagicDefense;
     private void Start()
     {
-        Health = Health != 0 ? Health : MaxHealth;
+        if (gameObject.CompareTag("Player") && PlayerState.Instance != null)
+        {
+            Health = PlayerState.Instance.Health;
+            Mana = PlayerState.Instance.Mana;
+        }
+        
+        if(Health == 0)
+        {
+            Health = MaxHealth;
+            Mana = MaxMana;
+        }
+
         Attack = Attack != 0 ? Attack : OriginalAttack;
         Defense = Defense != 0 ? Defense : OriginalDefense;
-        Mana = Mana != 0 ? Mana : MaxMana;
         Magic = Magic != 0 ? Magic : OriginalMagic;
         MagicDefense = MagicDefense != 0 ? MagicDefense : OriginalMagicDefense;
     }
-
     public void GetPhysicalDamage(int damage)
     {
         damage = damage / Defense;
@@ -54,8 +63,18 @@ public class BaseStats : MonoBehaviour
     public void Heal(int heal)
     {
         this.Health += heal;
+        
+        if (this.Health > MaxHealth)
+        {
+            this.Health = MaxHealth;
+        }
     }
 
+    public void RemoveMana(int mana)
+    {
+        this.Mana -= mana;
+    }
+    
     public void BuffDefense(int defense)
     {
         this.Defense += defense;

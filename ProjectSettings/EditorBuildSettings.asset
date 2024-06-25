@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/World/World.unity
     guid: 168495e658a58c444819621776a72457
   - enabled: 1
-    path: Assets/Scenes/Combat/CombatScene.unity
+    path: Assets/Scenes/Combat/CombatScene_1Enemy.unity
     guid: 97cc60e936895024b810515e07667b71
+  - enabled: 1
+    path: Assets/Scenes/Combat/CombatScene_2Enemies.unity
+    guid: e77d7c2e08a436444bbf7788d9672855
+  - enabled: 1
+    path: Assets/Scenes/Combat/CombatScene_3Enemies.unity
+    guid: c26d7ffd9cf72db4aa4475da1a3f1650
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
       type: 2}
