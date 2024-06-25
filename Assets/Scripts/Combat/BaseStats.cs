@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BaseStats : MonoBehaviour
 {
@@ -17,9 +18,9 @@ public class BaseStats : MonoBehaviour
 
     public int Defense;
 
-    public int OriginalSpeed = 10;
+    public int MaxMana = 10;
 
-    public int Speed;
+    public int Mana;
 
     public int OriginalMagic = 10;
 
@@ -33,7 +34,7 @@ public class BaseStats : MonoBehaviour
         Health = Health != 0 ? Health : MaxHealth;
         Attack = Attack != 0 ? Attack : OriginalAttack;
         Defense = Defense != 0 ? Defense : OriginalDefense;
-        Speed = Speed != 0 ? Speed : OriginalSpeed;
+        Mana = Mana != 0 ? Mana : MaxMana;
         Magic = Magic != 0 ? Magic : OriginalMagic;
         MagicDefense = MagicDefense != 0 ? MagicDefense : OriginalMagicDefense;
     }
@@ -77,12 +78,12 @@ public class BaseStats : MonoBehaviour
 
     public void BuffSpeed(int speed)
     {
-        this.Speed += speed;
+        this.Mana += speed;
     }
 
     public void NerfSpeed(int speed)
     {
-        this.Speed -= speed;
+        this.Mana -= speed;
     }
 
     public void BuffMagic(int magic)

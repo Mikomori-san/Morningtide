@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AIBehavior : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class AIBehavior : MonoBehaviour
     private bool isInAnimation = false;
     
     [HideInInspector] public bool isDone = false;
-    [HideInInspector] public bool hasDefended = false;
+    [HideInInspector] public bool hasPhysicallyDefended = false;
+    [HideInInspector] public bool hasMagicallyDefended = false;
     
     void Start()
     {
@@ -32,10 +34,16 @@ public class AIBehavior : MonoBehaviour
         
         enemyPointer.SetCurrentEnemyIndex(combatController.enemyIndexHasTurn);
 
-        if (hasDefended)
+        if (hasPhysicallyDefended)
         {
             GetComponent<BaseStats>().NerfDefense(5);
-            hasDefended = false;
+            hasPhysicallyDefended = false;
+        }
+
+        if (hasMagicallyDefended)
+        {
+            GetComponent<BaseStats>().NerfMagicDefense(5);
+            hasMagicallyDefended = false;
         }
         
         int randomNum = Random.Range(0, combatController.players.Count);
@@ -49,8 +57,19 @@ public class AIBehavior : MonoBehaviour
                 Debug.Log("Enemy " + name + " has attacked!");
                 break;
             case 2:
-                StartCoroutine(Defend());
-                Debug.Log("Enemy " + name + " has defended!");
+                int randomNum3 = Random.Range(0, 2);
+                switch (randomNum3)
+                {
+                    case 0:
+                        StartCoroutine(MagicDefend());
+                        Debug.Log("Enemy " + name + " has tensed the flow of the mana around them!");
+                        break;
+                    case 1:
+                        StartCoroutine(Defend());
+                        Debug.Log("Enemy " + name + " has physically hardened itself!");
+                        break;
+                }
+                
                 break;
         }
 
@@ -60,7 +79,18 @@ public class AIBehavior : MonoBehaviour
     private IEnumerator Defend()
     {
         GetComponent<BaseStats>().BuffDefense(5);
-        hasDefended = true;
+        hasPhysicallyDefended = true;
+        yield return new WaitForSeconds(1);
+        
+        isDone = true;
+        isInAnimation = false;
+        combatController.IncreaseEnemyTurn();
+    }
+    
+    private IEnumerator MagicDefend()
+    {
+        GetComponent<BaseStats>().BuffMagicDefense(5);
+        hasMagicallyDefended = true;
         yield return new WaitForSeconds(1);
         
         isDone = true;
@@ -72,9 +102,8 @@ public class AIBehavior : MonoBehaviour
     {
         GetComponent<Animator>().SetBool("isAttacking", true);
         Debug.Log(name + " is attacking player, and " + GetComponent<Animator>().GetBool("isAttacking"));
-        combatController.AttackTargetedPlayer(playerIndex, GetComponent<BaseStats>().Attack);
 
-        StartCoroutine(ThrowBomb());
+        StartCoroutine(ThrowBomb(playerIndex));
         
         yield return new WaitForEndOfFrame();
         
@@ -94,7 +123,7 @@ public class AIBehavior : MonoBehaviour
         }
     }
 
-    private IEnumerator ThrowBomb()
+    private IEnumerator ThrowBomb(int playerIndex)
     {
         float delay = 0.9f;
         yield return new WaitForSeconds(delay);
@@ -127,6 +156,7 @@ public class AIBehavior : MonoBehaviour
 
             yield return null;
         }
+        combatController.AttackTargetedPlayer(playerIndex, GetComponent<BaseStats>().Attack);
 
         Destroy(bomb);
     }

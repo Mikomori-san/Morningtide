@@ -126,6 +126,8 @@ public class CombatController : MonoBehaviour
 
     IEnumerator Dying(GameObject enemy)
     {
+        yield return new WaitForEndOfFrame();
+        
         while (true)
         {
             if (enemy.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 &&
